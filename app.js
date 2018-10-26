@@ -36,11 +36,9 @@ async function startConsumer(channel) {
    if (channel)
       channel.consume("NewMessageQueue", async function (msg) {
          let message = JSON.parse(msg.content.toString());
-         message.uuid = uuid;
-         messageId = message.messageId;
 
          try {
-            messages.emit('messages', msg.content.toString());
+            message.emit('message', message);
             log.logMessage("info", "Succesfully emitted message", { "X-correlation-id": message.uuid, "invoice_id": messageId });
          } catch (err) {
             log.logMessage("error", "Error making emitting messages to client(s)", { "X-correlation-id": message.uuid, "invoice_id": messageId });
