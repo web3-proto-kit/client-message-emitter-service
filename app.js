@@ -22,66 +22,32 @@ let channel;
 
 const poller = async () => {
    try{
-      console.log("lol")
+      channel = await RabbitService.setupRabbit(sMessagingserviceUri);
+      startConsumer(channel);
    } catch(err){
-
    } finally{
-      setTimeout(poller, 2500);
+      if(!channel)
+         setTimeout(poller, 2500);
    }
 }
 
-// async function startConsumer(channel) {
-//    channel = await RabbitService.setupRabbit(sMessagingserviceUri);
-//    console.log(channel);
-//    if (channel)
-//       channel.consume("NewMessageQueue", async function (msg) {
-//          let message = JSON.parse(msg.content.toString());
-//          message.uuid = uuid;
-//          messageId = message.messageId;
+async function startConsumer(channel) {
+   channel = await RabbitService.setupRabbit(sMessagingserviceUri);
+   if (channel)
+      channel.consume("NewMessageQueue", async function (msg) {
+         let message = JSON.parse(msg.content.toString());
+         message.uuid = uuid;
+         messageId = message.messageId;
 
-//          try {
-//             messages.emit('messages', msg.content.toString());
-//             log.logMessage("info", "Succesfully emitted message", { "X-correlation-id": message.uuid, "invoice_id": messageId });
-//          } catch (err) {
-//             log.logMessage("error", "Error making emitting messages to client(s)", { "X-correlation-id": message.uuid, "invoice_id": messageId });
-//          } finally {
-//          }
-//       }, { noAck: true });
-// }
+         try {
+            messages.emit('messages', msg.content.toString());
+            log.logMessage("info", "Succesfully emitted message", { "X-correlation-id": message.uuid, "invoice_id": messageId });
+         } catch (err) {
+            log.logMessage("error", "Error making emitting messages to client(s)", { "X-correlation-id": message.uuid, "invoice_id": messageId });
+         } finally {
+         }
+      }, { noAck: true });
+}
 
 setImmediate(poller);
 app.listen(3030, () => console.log(`client-message-emitter-service listening on port 3030!`));
-
-
-async function setupRabbit(sMessagingserviceUri) {
-   let channel;
-
-   try {
-      channel = await connectToRabbitMQ(sMessagingserviceUri);
-
-      channel.assertExchange('NewMessageExchange', 'fanout', { durable: true })
-
-      channel.assertQueue('NewMessageQueue', {
-         durable: true
-      });
-
-      channel.bindQueue('NewMessageQueue', 'NewMessageExchange', '');
-
-      log.logMessage("info", "Connection to rabbitMQ Successful");
-   } catch (err) {
-      log.logMessage("error", "Error with connection to rabbitMQ");
-   }
-
-   return channel;
-}
-
-async function connectToRabbitMQ(sMessagingserviceUri) {
-   try {
-      var conn = await amqp.connect(sMessagingserviceUri);
-      var oChannel = await conn.createChannel();
-   } catch (err) {
-      log.logMessage("error", "Error with connection to rabbitMQ");
-   } finally {
-      return oChannel;
-   }
-}
