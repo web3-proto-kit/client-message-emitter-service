@@ -12,7 +12,11 @@
     "socket.io": "^2.1.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "",
+    "dev:build": "docker build -t sean-github/message-emitter-service .",
+    "start": "node app.js",
+    "start:dev:ssh": "npm run dev:build && docker run -it sean-github/message-emitter-service /bin/bash",
+    "start:dev": "npm run dev:build && docker run -d sean-github/message-emitter-service"
   },
   "repository": {
     "type": "git",
