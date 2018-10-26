@@ -1,0 +1,27 @@
+{
+  "name": "client-message-emitter-service",
+  "version": "1.0.0",
+  "description": "Emmits messages to client applications via socket.io",
+  "main": "app.js",
+  "dependencies": {
+    "amqplib": "^0.5.2",
+    "body-parser": "^1.18.3",
+    "cf-nodejs-logging-support": "^3.0.12",
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "socket.io": "^2.1.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Blockchain-utility-applications/client-message-emitter-service.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Blockchain-utility-applications/client-message-emitter-service/issues"
+  },
+  "homepage": "https://github.com/Blockchain-utility-applications/client-message-emitter-service#readme"
+}
