@@ -11,7 +11,8 @@ RabbitService.setupRabbit = require('./services/rabbitService/setup-rabbit').set
 
 
 // Consume Messages and 'broadcast' over all open client connections
-let messages = io.of('/messages');
+let messageOut = io.of('/messages');
+console.log(io.of('/messages'));
 
 // let channel;
 const env = require('dotenv').config(); // for local testing
@@ -38,9 +39,10 @@ async function startConsumer(channel) {
          let message = JSON.parse(msg.content.toString());
 
          try {
-            message.emit('message', message);
+            messageOut.emit('message', message);
             log.logMessage("info", "Succesfully emitted message", { "X-correlation-id": message.uuid, "invoice_id": message.messageId });
          } catch (err) {
+               console.log(err);
             log.logMessage("error", "Error making emitting messages to client(s)", { "X-correlation-id": message.uuid, "invoice_id": message.messageId });
          } finally {
          }
