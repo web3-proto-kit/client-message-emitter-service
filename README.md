@@ -2,7 +2,7 @@
 Emmits messages to client applications via socket.io
 
 ```
-MessageExchange outgoing message payload = {
+Outgoing message payload = {
   "senderId": "uuid",
   "recieverId": "uuid",
   "messageId": "uuid",
