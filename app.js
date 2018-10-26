@@ -17,8 +17,6 @@ const env = require('dotenv').config(); // for local testing
 const sMessagingserviceUri = process.env.RABBIT_MQ_LOCAL;
 
 
-app.listen(3030, () => console.log(`client-message-emitter-service listening on port 3030!`));
-
 let channel;
 
 const poller = async () => {
@@ -36,10 +34,9 @@ const poller = async () => {
    }
 }
 
-setImmediate(poller);
-
 async function startConsumer(channel) {
    channel = await RabbitService.setupRabbit(sMessagingserviceUri);
+   console.log(channel);
    if (channel)
       channel.consume("NewMessageQueue", async function (msg) {
          let message = JSON.parse(msg.content.toString());
@@ -56,5 +53,7 @@ async function startConsumer(channel) {
       }, { noAck: true });
 }
 
+setImmediate(poller);
+app.listen(3030, () => console.log(`client-message-emitter-service listening on port 3030!`));
 
 
