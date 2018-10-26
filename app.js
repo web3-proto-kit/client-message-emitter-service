@@ -39,9 +39,9 @@ async function startConsumer(channel) {
 
          try {
             message.emit('message', message);
-            log.logMessage("info", "Succesfully emitted message", { "X-correlation-id": message.uuid, "invoice_id": messageId });
+            log.logMessage("info", "Succesfully emitted message", { "X-correlation-id": message.uuid, "invoice_id": message.messageId });
          } catch (err) {
-            log.logMessage("error", "Error making emitting messages to client(s)", { "X-correlation-id": message.uuid, "invoice_id": messageId });
+            log.logMessage("error", "Error making emitting messages to client(s)", { "X-correlation-id": message.uuid, "invoice_id": message.messageId });
          } finally {
          }
       }, { noAck: true });
