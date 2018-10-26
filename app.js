@@ -4,6 +4,7 @@ var app = express();
 var router = express.Router();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+const log = require('cf-nodejs-logging-support');
 
 const RabbitService = {};
 RabbitService.setupRabbit = require('./services/rabbitService/setup-rabbit').setupRabbit;
