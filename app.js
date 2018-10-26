@@ -21,17 +21,12 @@ const sMessagingserviceUri = process.env.RABBIT_MQ_LOCAL;
 let channel;
 
 const poller = async () => {
-   try {
-      if (!channel) {
-         channel = setupRabbit(sMessagingserviceUri);
-      }
-   } catch (err) {
-      log.logMessage("error", "Connection to rabbitMQ unsuccessful");
-   } finally {
-      if (!channel)
-         setTimeout(() => {
-            poller();
-         }, 2500)
+   try{
+      console.log("lol")
+   } catch(err){
+
+   } finally{
+      setTimeout(poller, 2500);
    }
 }
 
