@@ -1,53 +1,63 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
-var router = express.Router();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 const log = require('cf-nodejs-logging-support');
 
 const RabbitService = {};
 RabbitService.setupRabbit = require('./services/rabbitService/setup-rabbit').setupRabbit;
+RabbitService.startConsumer = require('./services/rabbitService/start-consumer').startConsumer;
 
-
-// Consume Messages and 'broadcast' over all open client connections
-let messageOut = io.of('/messages');
-console.log(io.of('/messages'));
-
-// let channel;
 const env = require('dotenv').config(); // for local testing
 const sMessagingserviceUri = process.env.RABBIT_MQ_LOCAL;
 
+app.get('/', function (req, res) {
+      res.send("hello user");
+});
 
 let channel;
 
-const poller = async () => {
-   try{
-      channel = await RabbitService.setupRabbit(sMessagingserviceUri);
-      startConsumer(channel);
-   } catch(err){
-   } finally{
-      if(!channel)
-         setTimeout(poller, 2500);
-   }
+const connect = async () => {
+      try {
+            channel = await RabbitService.setupRabbit(sMessagingserviceUri);
+            channel = RabbitService.startConsumer(channel);
+      } catch (err) {
+      } finally {
+            if (!channel)
+                  setTimeout(connect, 2500);
+      }
 }
 
-async function startConsumer(channel) {
-   channel = await RabbitService.setupRabbit(sMessagingserviceUri);
-   if (channel)
-      channel.consume("NewMessageQueue", async function (msg) {
-         let message = JSON.parse(msg.content.toString());
+http.listen(3030, function () {
+      console.log('listening on *:3030');
+});
 
-         try {
-            messageOut.emit('message', message);
-            log.logMessage("info", "Succesfully emitted message", { "X-correlation-id": message.uuid, "invoice_id": message.messageId });
-         } catch (err) {
-               console.log(err);
-            log.logMessage("error", "Error making emitting messages to client(s)", { "X-correlation-id": message.uuid, "invoice_id": message.messageId });
-         } finally {
-         }
-      }, { noAck: true });
-}
+io.on('connection', function (socket) {
+      console.log('a user connected');
+      io.of('/messages').emit('message', message);
+});
 
-setImmediate(poller);
-app.listen(3030, () => console.log(`client-message-emitter-service listening on port 3030!`));
+connect();
+
+// let message = JSON.stringify({
+//       "senderId": "uuid",
+//       "recieverId": "uuid",
+//       "messageId": "uuid",
+//       "messagePayload": "message as string here..."
+// });
+
+// try {
+//       setInterval(() => {
+//             io.of('/messages').emit('message', message);
+//       }, 2000)
+// } catch (err) {
+//       console.log(err);
+// } finally {
+// }
+
+
+
+
+
+
+// setImmediate(poller);
+// server.listen(3030, () => console.log(`client-message-emitter-service listening on port 3030!`));

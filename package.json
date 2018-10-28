@@ -15,7 +15,7 @@
     "test": "",
     "dev:build": "docker build -t sean-github/message-emitter-service .",
     "start": "node app.js",
-    "start:dev:ssh": "npm run dev:build && docker run -it sean-github/message-emitter-service /bin/bash",
+    "start:dev:ssh": "npm run dev:build && docker run -p 3030:3030 -it sean-github/message-emitter-service /bin/bash",
     "start:dev": "npm run dev:build && docker run -d sean-github/message-emitter-service"
   },
   "repository": {
