@@ -3,7 +3,7 @@ const log = require('cf-nodejs-logging-support');
 async function startConsumer(channel, io) {
    if (channel)
       channel.consume("NewMessageQueue", async function (msg) {
-      let message = JSON.stringify(msg);
+      let message =  msg.content.toString();
       try {
          io.of('/messages').emit('message', message);
          log.logMessage("info", "Succesfully emitted message", { "X-correlation-id": message.uuid, "invoice_id": message.messageId });
