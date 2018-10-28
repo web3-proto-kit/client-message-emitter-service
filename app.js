@@ -19,7 +19,8 @@ let channel;
 const connect = async () => {
       try {
             channel = await RabbitService.setupRabbit(sMessagingserviceUri);
-            channel = RabbitService.startConsumer(channel, io);
+            if(channel)
+                  channel = RabbitService.startConsumer(channel, io);
       } catch (err) {
       } finally {
             if (!channel)
@@ -36,3 +37,27 @@ io.on('connection', function (socket) {
 });
 
 connect();
+
+// let message = JSON.stringify({
+//       "senderId": "uuid",
+//       "recieverId": "uuid",
+//       "messageId": "uuid",
+//       "messagePayload": "message as string here..."
+// });
+
+// try {
+//       setInterval(() => {
+//             io.of('/messages').emit('message', message);
+//       }, 2000)
+// } catch (err) {
+//       console.log(err);
+// } finally {
+// }
+
+
+
+
+
+
+// setImmediate(poller);
+// server.listen(3030, () => console.log(`client-message-emitter-service listening on port 3030!`));
