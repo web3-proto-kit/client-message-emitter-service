@@ -1,3 +1,5 @@
+const log = require('cf-nodejs-logging-support');
+
 async function startConsumer(channel, io) {
    if (channel)
       channel.consume("NewMessageQueue", async function (msg) {
