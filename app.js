@@ -1,6 +1,6 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 const log = require('cf-nodejs-logging-support');
 
 const RabbitService = {};
@@ -19,7 +19,7 @@ let channel;
 const connect = async () => {
       try {
             channel = await RabbitService.setupRabbit(sMessagingserviceUri);
-            channel = RabbitService.startConsumer(channel);
+            channel = RabbitService.startConsumer(channel, io);
       } catch (err) {
       } finally {
             if (!channel)
@@ -33,31 +33,6 @@ http.listen(3030, function () {
 
 io.on('connection', function (socket) {
       console.log('a user connected');
-      io.of('/messages').emit('message', message);
 });
 
 connect();
-
-// let message = JSON.stringify({
-//       "senderId": "uuid",
-//       "recieverId": "uuid",
-//       "messageId": "uuid",
-//       "messagePayload": "message as string here..."
-// });
-
-// try {
-//       setInterval(() => {
-//             io.of('/messages').emit('message', message);
-//       }, 2000)
-// } catch (err) {
-//       console.log(err);
-// } finally {
-// }
-
-
-
-
-
-
-// setImmediate(poller);
-// server.listen(3030, () => console.log(`client-message-emitter-service listening on port 3030!`));
